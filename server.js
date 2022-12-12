@@ -83,16 +83,17 @@ app.post('/register',
       const client = await pool.connect();
       client.query(insertQuery,(err,result)=>{
         if(!err){
-          res.send('Insertion was successful') 
+          res.send('Insertion was successful');
+          client.end();
         } else {
-          res.send(err)
+          res.send(err);
+          client.end();
         }
       })
     }catch(ex){
       client.end
       throw ex;
     }
-    client.end()
   }
 )
 
@@ -107,13 +108,16 @@ app.post('/login',
       if(!err){
         if(result.rowCount > 0){
           res.send(result.rows);
+          client.end();
         }else{
-          res.send('Invalid login credentials. Please check again.');
+          res.send({ some: 'Invalid login credentials. Please check again.'});
+          client.end();
         } 
       } else {
         res.send(err)
+        client.end();
       }
-    }).then(client.end);
+    });
   }
 )
 
