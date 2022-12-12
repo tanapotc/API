@@ -121,85 +121,8 @@ app.post('/login',
   }
 )
 
-app.post('/auth',function(req,res){
-  let Username = req.body.Username;
-  let Password = req.body.Password;
-  let E_mail = req.body.E_mail;
-  if(Username && Password) {
-    client.query(`SELECT * FROM "TMG"."User" 
-    WHERE "Username" = ? or 
-          "E_mail" = ?  and 
-          "Password" = ? ; `, [Username,Password,E_mail],function(err,result,fields){
-            if(result.rowCount > 0){
-            req.session.loggein = true;
-            req.session.Username = Username;
-            console.log
-            res.redirect('/home');
-          }else{
-            res.send('Incorect Username/E-Mail and/or Password')
-          }
-          res.end();
-          });
-  } else {
-    res.send('Plese enter Username/E-Mail and Password')
-  }
-});
-
-app.get('/home',function(req,res){
-  if (req.session.loggein){
-    res.send('Welcome back, '+res.session.Username + '!');
-  } else {
-    res.send('Please login to view this page');
-  }
-})
-
 //==================================================================================
 //ROUTES//
-
-// create a todo
-app.post("/todos",async(req,res)=>
-{
-  try{
-    const {description} = req.body;
-    const newTodo = await pool.query(
-      "INSERT INTO todo (description) VALUES($1)",
-      [description]  
-    );
-    console.log(test)
-  }catch(ex){
-    throw ex
-  }
-})
-// create 
-app.get('/', (req, res) => {
-  res.send('Hello World')
-})
-
-const books = require('./db')
-const { response } = require('express')
-
-app.get('/books', (req, res) => {
-  res.json(books)
-})
-app.get('/books/:id', (req, res) => {
-    res.json(books.find(book => book.id === req.params.id))
-})
-
-app.post('/books', (req, res) => {
-    books.push(req.body)
-    res.status(201).json(req.body)
-})
-
-app.put('/books/:id', (req, res) => {
-    const updateIndex = books.findIndex(book => book.id === req.params.id)
-    res.json(Object.assign(books[updateIndex], req.body))
-})
-
-app.delete('/books/:id', (req, res) => {
-    const deletedIndex = books.findIndex(book => book.id === req.params.id)
-    books.splice(deletedIndex, 1)
-    res.status(204).send()
- })
 
 app.listen(5000, () => {
   console.log('Start server at port 5000.')
