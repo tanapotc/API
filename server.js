@@ -102,8 +102,7 @@ app.post('/login',
   async (req, res) => {
     let user = req.body;
     const insertQuery =`SELECT "User_ID","Username" FROM "TMG"."User" 
-    WHERE ("Username" = '${user.Username}' or 
-          "E_mail" = '${user.E_mail}' )and 
+    WHERE ("E_mail" = '${user.E_mail}' )and 
           "Password" = '${user.Password}'; `
     const client = await pool.connect();
     client.query(insertQuery,(err,result)=>{
