@@ -69,7 +69,6 @@ app.get('/users/:User_ID',
 
 app.post('/register',
   async (req, res) => {
-    console.log('req');
     try{
       let user = req.body;
       const insertQuery =`INSERT INTO "TMG"."User"(
@@ -84,17 +83,16 @@ app.post('/register',
       const client = await pool.connect();
       client.query(insertQuery,(err,result)=>{
         if(!err){
-          res.send('Insertion was successful')
+          res.send('Insertion was successful') 
         } else {
           res.send(err)
         }
-      });
+      })
     }catch(ex){
       client.end
       throw ex;
     }
-    res.end();
-    client.end();
+    client.end()
   }
 )
 
@@ -115,8 +113,7 @@ app.post('/login',
       } else {
         res.send(err)
       }
-    });
-    client.end
+    }).then(client.end);
   }
 )
 
