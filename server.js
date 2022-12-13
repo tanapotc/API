@@ -1,13 +1,15 @@
-const express = require('express')
-const app = express()
+const {environment}= require('./environment.js');
+const express = require('express');
+const app = express();
 const cors = require('cors');
-const bodyParser = require('body-parser')
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }))
+const bodyParser = require('body-parser');
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 //==================================================================================
+const url = environment.apiUrl;
 const { Client,Pool } = require('pg')
 const corsOptions = {
-  origin: 'http://localhost:3000',
+  origin: url,
   credentials: true,
 };
 app.use(cors(corsOptions));

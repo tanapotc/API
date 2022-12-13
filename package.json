@@ -24,5 +24,9 @@
     "url": "https://github.com/tanapotc/my-api/issues"
   },
   "homepage": "https://github.com/tanapotc/my-api#readme",
-  "description": ""
+  "description": "",
+  "contains":
+  {
+    "type":"module"
+  }
 }
