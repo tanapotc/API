@@ -7,26 +7,15 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 //==================================================================================
 const url = environment.apiUrl;
+const myBase = environment.myDataBase;
 const { Client,Pool } = require('pg')
 const corsOptions = {
   origin: url,
   credentials: true,
 };
 app.use(cors(corsOptions));
-const client = new Client({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'TMS',
-  password: 'root1',
-  port: 5432,
-});
-const pool = new Pool({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'TMS',
-  password: 'root1',
-  port: 5432,
-});
+const client = new Client(myBase);
+const pool = new Pool(myBase);
 client.connect(function(err) {
   if (err) throw err;
   console.log("Connected!");
@@ -73,19 +62,30 @@ app.post('/register',
   async (req, res) => {
     try{
       let user = req.body;
-      const insertQuery =`INSERT INTO "TMG"."User"(
+      const insertQuery =`
+        INSERT INTO "TMG"."User"(
         "Username", "Password", "E_mail", "CreateDate", "UpdateDate", "ActiveFlag")
-        VALUES ( 
+        SELECT  
                 '${user.Username}',
                 '${user.Password}', 
                 '${user.E_mail}', 
-               date_trunc('SECOND', TIMESTAMP WITH TIME ZONE 'now()' AT TIME ZONE 'UTC') ,
+               	date_trunc('SECOND', TIMESTAMP WITH TIME ZONE 'now()' AT TIME ZONE 'UTC') ,
                 date_trunc('SECOND', TIMESTAMP WITH TIME ZONE 'now()' AT TIME ZONE 'UTC'),
-                true);`
+                true
+        WHERE NOT EXISTS (
+        SELECT 1 FROM "TMG"."User" WHERE "Username" = '${user.Username}' and "E_mail" = '${user.E_mail}' );`
       const client = await pool.connect();
       client.query(insertQuery,(err,result)=>{
         if(!err){
-          res.send('Insertion was successful');
+          if(result.rowCount > 0){
+            res.send({message: 'Insertion was successful',
+                        status: 1 ,
+                        pass: true   });
+          } else {
+            res.send({message: 'This username or email address is already in use by someone else. try a different name',
+                      status: 0,
+                      pass: true});
+          }
           client.end();
         } else {
           res.send(err);
